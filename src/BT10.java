@@ -1,91 +1,88 @@
 abstract class PaymentMethod {
     double amount;
-    public PaymentMethod(double amount) {
+    String currency;
+    public PaymentMethod(double amount, String currency) {
         this.amount = amount;
+        this.currency = currency;
     }
-    public double getAmount() {
-        return amount;
-    }
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-    public abstract double processPayment(double amount);
-    public abstract void processPayment(String currency);
-    public abstract double calculateFee();
+    abstract double processPayment();
+    abstract double calculateFee();
+    abstract void processPayment(double amount, String currency);
 }
+
 class CreditCard extends PaymentMethod {
-    public CreditCard(double amount) {
-        super(amount);
+    public CreditCard(double amount, String currency) {
+        super(amount, currency);
     }
     @Override
-    public double calculateFee() {
+    double calculateFee() {
         return amount * 0.02;
     }
     @Override
-    public double processPayment(double amount) {
-        double total = amount + calculateFee();
-        setAmount(total);
-        return total;
+    double processPayment() {
+        return amount + calculateFee();
     }
     @Override
-    public void processPayment(String currency) {
-        System.out.println(amount + " " + currency);
+    void processPayment(double amount, String currency) {
+        double totalAmount = amount + calculateFee();
+        System.out.println("----------" + "Credit Card" + "----------");
+        System.out.println("Total Amount: " + processPayment()+ " "+currency);
+        System.out.println("Processed payment of " + amount + " " + currency + " with total: " + totalAmount + " " + currency);
     }
 }
 
 class DebitCard extends PaymentMethod {
-    public DebitCard(double amount) {
-        super(amount);
+    public DebitCard(double amount, String currency) {
+        super(amount, currency);
     }
     @Override
-    public double calculateFee() {
+    double calculateFee() {
         return amount * 0.01;
     }
     @Override
-    public double processPayment(double amount) {
-        double total = amount + calculateFee();
-        setAmount(total);
-        return total;
+    double processPayment() {
+        return amount + calculateFee();
     }
     @Override
-    public void processPayment(String currency) {
-        System.out.println(amount + " " + currency);
+    void processPayment(double amount, String currency) {
+        double totalAmount = amount + calculateFee();
+        System.out.println("----------" + "Debit Card" + "----------");
+        System.out.println("Total Amount: " + processPayment()+ " "+currency);
+        System.out.println("Processed payment of " + amount + " " + currency + " with total: " + totalAmount + " " + currency);
     }
 }
+
 class Cash extends PaymentMethod {
-    public Cash(double amount) {
-        super(amount);
+    public Cash(double amount, String currency) {
+        super(amount, currency);
     }
     @Override
-    public double calculateFee() {
+    double calculateFee() {
         return 0;
     }
     @Override
-    public double processPayment(double amount) {
-        double total = amount + calculateFee();
-        setAmount(total);
-        return total;
+    double processPayment() {
+        return amount;
     }
     @Override
-    public void processPayment(String currency) {
-        System.out.println(amount + " " + currency);
+    void processPayment(double amount, String currency) {
+        double totalAmount = amount + calculateFee();
+        System.out.println("----------" + "Cash" + "----------");
+        System.out.println("Total Amount: " + processPayment()+ " "+currency);
+        System.out.println("Processed payment of " + amount + " " + currency + " with total: " + totalAmount + " " + currency);
     }
 }
+
 public class BT10 {
     public static void main(String[] args) {
-        PaymentMethod creditCard = new CreditCard(1000);
-        PaymentMethod debitCard = new DebitCard(1000);
-        PaymentMethod cash = new Cash(1000);
-        System.out.println("--- Credit Card ---");
-        System.out.println("Total Payment (CreditCard): " + creditCard.processPayment(1000));
-        creditCard.processPayment("USD");
-        System.out.println("----------------------------");
-        System.out.println("--- Debit Card ---");
-        System.out.println("Total Payment (DebitCard): " + debitCard.processPayment(1000));
-        debitCard.processPayment("EUR");
-        System.out.println("----------------------------");
-        System.out.println("--- Cash ---");
-        System.out.println("Total Payment (Cash): " + cash.processPayment(1000));
-        cash.processPayment("JPY");
+        PaymentMethod[] paymentMethods = {
+                new CreditCard(1000, "USD"),
+                new DebitCard(1000, "EUR"),
+                new Cash(1000, "JPY"),
+        };
+
+        for (int i = 0; i < paymentMethods.length; i++) {
+            paymentMethods[i].processPayment(paymentMethods[i].amount,paymentMethods[i].currency);
+        }
     }
 }
